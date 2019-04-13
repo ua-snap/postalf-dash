@@ -171,17 +171,18 @@ def runplots(plottype, gcm, rcp, replicate):
     hist = hin['_default']
 
     region = "AIEM_Domain"
-    xar = []
-    yar = []
-    hxar = []
-    hyar = []
+
     figure = {}
     if (plottype == 'AAB'):
+        xar = []
+        yar = []
+        hxar = []
+        hyar = []
         for i in range(1,90):
             hxar.append(hist[i]['fire_year'])
             hyar.append(hist[i]['total_area_burned'][region])
 
-        for i in range(1,data.size):
+        for i in range(1,data.size+1):
             if (int(data[i]['replicate']) == int(replicate)):
                 xar.append(data[i]['fire_year'])
                 yar.append(data[i]['total_area_burned'][region])
@@ -211,32 +212,29 @@ def runplots(plottype, gcm, rcp, replicate):
             }
         figure['layout'] = layout
     elif (plottype == 'CAB'):
-        tmpx = []
-        tmpy = []
-        htmpx = []
-        htmpy = []
+        xar = []
+        yar = []
+        hxar = []
+        hyar = []
+        vals = {}
+        hvals = {}
         for i in range(1,hist.size):
-            htmpx.append(hist[i]['fire_year'])
-            htmpy.append(hist[i]['total_area_burned'][region])
-
+            hvals[hist[i]['fire_year']] = hist[i]['total_area_burned'][region]
         for i in range(1,data.size):
             if (int(data[i]['replicate']) == int(replicate)):
-                tmpx.append(data[i]['fire_year'])
-                tmpy.append(data[i]['total_area_burned'][region])
+                vals[data[i]['fire_year']] = data[i]['total_area_burned'][region]
         running_total = 0
-        for i in range(1,len(htmpx)):
-            print(i)
-            hxar.append(htmpx[i])
-            running_total += htmpy[i]
-            hyar.append(running_total)
+        for i in sorted(hvals.keys()):
+            if (int(i) >= 1950):
+                hxar.append(i)
+                running_total += hvals[i]
+                hyar.append(running_total)
         running_total = 0
-        for i in range(1,len(tmpx)):
-            print(i)
-            xar.append(tmpx[i])
-            running_total += tmpy[i]
-            yar.append(running_total)
-        print(hxar, hyar)
-        print(xar, yar)
+        for i in sorted(vals.keys()):
+            if (int(i) >= 1950):
+                xar.append(i)
+                running_total += vals[i]
+                yar.append(running_total)
         layout = {
                 'title': 'AR5 ' + gcm + ' ' + rcp
         }
