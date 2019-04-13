@@ -25,6 +25,17 @@ plottype = dcc.Dropdown(
     ],
     value='AAB'
 )
+regions = dcc.Dropdown(
+    id='region',
+    options=[
+        {'label': 'Northwestern Interior Forest LCC', 'value': 'Northwestern_Interior_Forest_LCC'},
+        {'label': 'Western Alaska LCC', 'value': 'Western_Alaska_LCC'},
+        {'label': 'AIEM_Domain', 'value': 'AIEM_Domain'},
+        {'label': 'Arctic LCC', 'value': 'Arctic_LCC'},
+        {'label': 'North Pacific LCC', 'value': 'North_Pacific_LCC'}
+    ],
+    value='AIEM_Domain'
+)
 
 gcms = dcc.Dropdown(
     id='gcm',
@@ -58,6 +69,13 @@ plot_field = html.Div(
     children=[
         html.Label('Plot Type', className='label'),
         html.Div(className='control', children=[plottype])
+    ]
+)
+region_field = html.Div(
+    className='field',
+    children=[
+        html.Label('Region', className='label'),
+        html.Div(className='control', children=[regions])
     ]
 )
 gcm_field = html.Div(
@@ -96,7 +114,23 @@ form_elements_section = html.Div(
     children=[
         html.H2('ALFRESCO Post Processing', className='title is-2'),
         html.H4('These plots can be used for the calibration of ALFRESCO', className='subtitle is-4'),
-        plot_field,
+        html.Div(
+            className='columns',
+            children=[
+                html.Div(
+                    className='column',
+                    children=[
+                        plot_field
+                    ]
+                ),
+                html.Div(
+                    className='column',
+                    children=[
+                        region_field
+                    ]
+                )
+            ]
+        ),
         html.Div(
             className='columns',
             children=[
@@ -157,20 +191,19 @@ app.layout = html.Div(
     Output('alfplots', 'figure'),
     inputs=[
         Input('plottype', 'value'),
+        Input('region', 'value'),
         Input('gcm', 'value'),
         Input('rcp', 'value'),
         Input('replicate', 'value')
     ]
 )
 
-def runplots(plottype, gcm, rcp, replicate):
+def runplots(plottype, region, gcm, rcp, replicate):
     filename = 'data/AR5_2015_' + gcm + '_' + rcp + '.json'
     din = pd.read_json(filename)
     data = din['_default']
     hin = pd.read_json('data/AR5_2015_Observed.json')
     hist = hin['_default']
-
-    region = "AIEM_Domain"
 
     figure = {}
     if (plottype == 'AAB'):
