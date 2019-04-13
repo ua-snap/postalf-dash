@@ -171,11 +171,12 @@ def runplots(plottype, gcm, rcp, replicate):
     hist = hin['_default']
 
     region = "AIEM_Domain"
+    xar = []
+    yar = []
+    hxar = []
+    hyar = []
+    figure = {}
     if (plottype == 'AAB'):
-        xar = []
-        yar = []
-        hxar = []
-        hyar = []
         for i in range(1,90):
             hxar.append(hist[i]['fire_year'])
             hyar.append(hist[i]['total_area_burned'][region])
@@ -184,35 +185,83 @@ def runplots(plottype, gcm, rcp, replicate):
             if (int(data[i]['replicate']) == int(replicate)):
                 xar.append(data[i]['fire_year'])
                 yar.append(data[i]['total_area_burned'][region])
-
         layout = {
                 'barmode': 'grouped',
                 'title': 'AR5 ' + gcm + ' ' + rcp
         }
         figure = {
-            'data': [{
-                'x': xar,
-                'y': yar,
-                'type': 'bar',
-                'marker': {
-                    'color': '#999999'
+                'data': [{
+                    'x': xar,
+                    'y': yar,
+                    'type': 'bar',
+                    'marker': {
+                        'color': '#999999'
+                    },
+                    'name': 'Replicate: ' + str(replicate)
                 },
-                'name': 'Replicate: ' + str(replicate)
-            },
-            {
-                'x': hxar,
-                'y': hyar,
-                'type': 'bar',
-                'marker': {
-                    'color': '#ff6666'
-                },
-                'name': 'Historical '
-            }]
-        }
+                {
+                    'x': hxar,
+                    'y': hyar,
+                    'type': 'bar',
+                    'marker': {
+                        'color': '#ff6666'
+                    },
+                    'name': 'Historical '
+                }]
+            }
         figure['layout'] = layout
-        return figure
-    else:
-        return
+    elif (plottype == 'CAB'):
+        tmpx = []
+        tmpy = []
+        htmpx = []
+        htmpy = []
+        for i in range(1,hist.size):
+            htmpx.append(hist[i]['fire_year'])
+            htmpy.append(hist[i]['total_area_burned'][region])
+
+        for i in range(1,data.size):
+            if (int(data[i]['replicate']) == int(replicate)):
+                tmpx.append(data[i]['fire_year'])
+                tmpy.append(data[i]['total_area_burned'][region])
+        running_total = 0
+        for i in range(1,len(htmpx)):
+            print(i)
+            hxar.append(htmpx[i])
+            running_total += htmpy[i]
+            hyar.append(running_total)
+        running_total = 0
+        for i in range(1,len(tmpx)):
+            print(i)
+            xar.append(tmpx[i])
+            running_total += tmpy[i]
+            yar.append(running_total)
+        print(hxar, hyar)
+        print(xar, yar)
+        layout = {
+                'title': 'AR5 ' + gcm + ' ' + rcp
+        }
+        figure = {
+                'data': [{
+                    'x': xar,
+                    'y': yar,
+                    'type': 'line',
+                    'marker': {
+                        'color': '#999999'
+                    },
+                    'name': 'Replicate: ' + str(replicate)
+                },
+                {
+                    'x': hxar,
+                    'y': hyar,
+                    'type': 'line',
+                    'marker': {
+                        'color': '#ff6666'
+                    },
+                    'name': 'Historical '
+                }]
+            }
+        figure['layout'] = layout
+    return figure
 
 if __name__ == '__main__':
     application.run(debug=True, port=8080)
