@@ -21,7 +21,8 @@ plottype = dcc.Dropdown(
     id='plottype',
     options=[
         {'label': 'Annual Area Burned', 'value': 'AAB'},
-        {'label': 'Cumulative Area Burned', 'value': 'CAB'}
+        {'label': 'Cumulative Area Burned', 'value': 'CAB'},
+        {'label': 'Vegetation', 'value': 'VEG'}
     ],
     value='AAB'
 )
@@ -30,7 +31,7 @@ regions = dcc.Dropdown(
     options=[
         {'label': 'Northwestern Interior Forest LCC', 'value': 'Northwestern_Interior_Forest_LCC'},
         {'label': 'Western Alaska LCC', 'value': 'Western_Alaska_LCC'},
-        {'label': 'AIEM_Domain', 'value': 'AIEM_Domain'},
+        {'label': 'AIEM Domain', 'value': 'AIEM_Domain'},
         {'label': 'Arctic LCC', 'value': 'Arctic_LCC'},
         {'label': 'North Pacific LCC', 'value': 'North_Pacific_LCC'}
     ],
@@ -221,7 +222,10 @@ def runplots(plottype, region, gcm, rcp, replicate):
                 yar.append(data[i]['total_area_burned'][region])
         layout = {
                 'barmode': 'grouped',
-                'title': 'AR5 ' + gcm + ' ' + rcp
+                'title': 'AR5 ' + gcm + ' ' + rcp,
+                'xaxis': {
+                        'range': [1950,2010]
+                }
         }
         figure = {
                 'data': [{
@@ -243,6 +247,43 @@ def runplots(plottype, region, gcm, rcp, replicate):
                     'name': 'Historical '
                 }]
             }
+        figure['layout'] = layout
+    elif (plottype == 'VEG'):
+        xar = []
+        yar = []
+        vals = {}
+        veg = {'Black Spruce': [], 'White Spruce': [], 'Deciduous': [], 'Graminoid Tundra': [], 'Shrub Tundra': [], 'Wetland Tundra': [], 'Temperate Rainforest': [], 'Barren lichen-moss': []}
+        for i in range(1,data.size):
+            if (int(data[i]['replicate']) == int(replicate)):
+                vals[data[i]['av_year']] = data[i]['veg_counts'][region]
+        running_total = 0
+        for i in sorted(vals.keys()):
+            if (int(i) >= 1950):
+                xar.append(i)
+                veg['Black Spruce'].append(vals[i]['Black Spruce'])
+                veg['White Spruce'].append(vals[i]['White Spruce'])
+                veg['Deciduous'].append(vals[i]['Deciduous'])
+                veg['Graminoid Tundra'].append(vals[i]['Graminoid Tundra'])
+                veg['Shrub Tundra'].append(vals[i]['Shrub Tundra'])
+                veg['Wetland Tundra'].append(vals[i]['Wetland Tundra'])
+                veg['Temperate Rainforest'].append(vals[i]['Temperate Rainforest'])
+                veg['Barren lichen-moss'].append(vals[i]['Barren lichen-moss'])
+        layout = {
+                'title': 'AR5 ' + gcm + ' ' + rcp,
+                'xaxis': {
+                        'range': [1950,2010]
+                },
+                'hovermode': 'closest'
+        }
+        figure = { 'data': []
+            }
+        for i in veg:
+            figure['data'].append({
+                'x': xar,
+                'y': veg[i],
+                'type': 'line',
+                'name': i
+            })
         figure['layout'] = layout
     elif (plottype == 'CAB'):
         xar = []
@@ -269,7 +310,11 @@ def runplots(plottype, region, gcm, rcp, replicate):
                 running_total += vals[i]
                 yar.append(running_total)
         layout = {
-                'title': 'AR5 ' + gcm + ' ' + rcp
+                'title': 'AR5 ' + gcm + ' ' + rcp,
+                'xaxis': {
+                        'range': [1950,2010]
+                },
+
         }
         figure = {
                 'data': [{
