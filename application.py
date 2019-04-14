@@ -265,9 +265,9 @@ def runplots(plottype, region, gcm, rcp, replicate):
                 veg['Deciduous'].append(vals[i]['Deciduous'])
                 veg['Graminoid Tundra'].append(vals[i]['Graminoid Tundra'])
                 veg['Shrub Tundra'].append(vals[i]['Shrub Tundra'])
-                veg['Wetland Tundra'].append(vals[i]['Wetland Tundra'])
-                veg['Temperate Rainforest'].append(vals[i]['Temperate Rainforest'])
-                veg['Barren lichen-moss'].append(vals[i]['Barren lichen-moss'])
+                    #veg['Wetland Tundra'].append(vals[i]['Wetland Tundra'])
+                    #veg['Temperate Rainforest'].append(vals[i]['Temperate Rainforest'])
+                    #veg['Barren lichen-moss'].append(vals[i]['Barren lichen-moss'])
         layout = {
                 'title': 'AR5 ' + gcm + ' ' + rcp,
                 'xaxis': {
