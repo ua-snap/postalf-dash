@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 dash = "*"
 dash-renderer = "*"
 dash-html-components = "*"
@@ -14,12 +11,9 @@ dash-core-components = "*"
 plotly = "*"
 dash-dangerously-set-inner-html = "*"
 pandas = "*"
-
+xarray = "*"
 
 [dev-packages]
 
-
-
 [requires]
-
 python_version = "3.6"
